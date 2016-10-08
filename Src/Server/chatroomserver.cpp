@@ -7,12 +7,12 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
-//#include "sleepthread.h"
+#include "sleepthread.h"
 
 ChatRoomServer::ChatRoomServer(QObject *parent):QTcpServer(parent){
 
     maxPending = 50;
-    totalClient =
+    totalClient = 0;
     countLog = 0;
 
     setMaxPendingConnections(maxPending);
@@ -65,25 +65,6 @@ void ChatRoomServer::incomingConnection(qintptr socketDescriptor){
                   QStringLiteral(" Socket : ") + QString::number(socketDescriptor) +
                   QStringLiteral(" 連線座位為")+QString::number(socketNum) );
 
-/*
-    for(int i=0;i<ipList.size();i++){
-        if(ipList.at(i) == clientAdress){
-            if(!clientCap_IsEmpty.at(i)){
-                qDebug() << QStringLiteral("IP位置:")+clientAdress+QStringLiteral("重複連線");
-                return;
-            }
-            if(clientCap_IsEmpty.at(i)){
-                //qDebug()
-                clientList[i].setSocketDescriptor(socketDescriptor);
-                clientCap_IsEmpty.at(i) = false;
-                socketNum = i;
-                clientList[socketNum].Num = socketNum;
-                qDebug() << QStringLiteral("在1配給他");
-                break;
-            }
-        }
-    }
-*/
     connect(&clientList[socketNum],SIGNAL(sendMessage(quint8,QString,QString)),
             this,SLOT(transferMessage(quint8,QString,QString)));
     connect(&clientList[socketNum],SIGNAL(clientDisconnectedSignal(int)),
@@ -104,6 +85,10 @@ int ChatRoomServer::getClientNum(QString clinetAdress,qintptr socketDescriptor){
 }
 
 void ChatRoomServer::clientDisconnectedSlot(int socketNum){
+    disconnect(&clientList[socketNum],SIGNAL(clientDisconnectedSignal(int)),
+            this,SLOT(clientDisconnectedSlot(int)));
+
+    qDebug() << "ChatRoomServer::clientDisconnectedSlot()";
 
     clientCap_IsEmpty.at(socketNum) = true;
     ipList.at(socketNum) = "";
@@ -111,6 +96,7 @@ void ChatRoomServer::clientDisconnectedSlot(int socketNum){
             this,SLOT(transferMessage(quint8,QString,QString)));
     disconnect(&clientList[socketNum],SIGNAL(updateSrvEvnLogSignal(QString)),
                      this,SLOT(updateEvnLog(QString)));
+
     updateEvnLog( QStringLiteral("SocketNum: ") + QString::number(socketNum) + QStringLiteral(" ->刪除連線") );
     updateEvnLog( QStringLiteral("現在連線人數") + QString::number(--totalClient) );
 }
@@ -153,6 +139,7 @@ void ChatRoomServer::updateEvnLog(QString info){
 }
 
 void ChatRoomServer::endServer(){
+    totalClient = 0;
 
     updateEvnLog(QStringLiteral("關閉伺服器"));
 
@@ -225,9 +212,6 @@ void ClientSocket::readClient(){
 
         updateEvnLog(userID+QStringLiteral("登入"));
 
-        //SleepThread::msleep(3000);
-        //sendLogSuc();
-
         QByteArray block;
         QDataStream out(&block,QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_7);
@@ -296,9 +280,10 @@ void ClientSocket::updateEvnLog(QString info){
 }
 
 void ClientSocket::clientDisconnected(){
-    updateEvnLog( QStringLiteral("Socket")
-                  +QString::number(Num)+QStringLiteral("中斷連線") ) ;
+    qDebug() << "clientDisconnected()";
+
+    int i = 0;
+
     emit clientDisconnectedSignal(Num);
 
-    //deleteLater();
 }
