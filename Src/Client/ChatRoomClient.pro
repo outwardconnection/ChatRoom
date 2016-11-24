@@ -13,18 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     settinginterface.cpp \
     sleepthread.cpp \
     relayform.cpp \
     serverlistitem.cpp \
-    scrollareamodify.cpp
+    scrollareamodify.cpp \
+    clientcontrol.cpp \
+    chatroomclient.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     settinginterface.h \
     sleepthread.h \
     relayform.h \
     ServerListItem.h \
-    scrollareamodify.h
+    scrollareamodify.h \
+    clientcontrol.h \
+    chatroomclient.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    chatroomclient.ui

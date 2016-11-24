@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+﻿#include "chatroomclient.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
 #include <QTextStream>
@@ -12,7 +12,7 @@
 #include <QFileInfo>
 #include "sleepthread.h"
 
-MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWindow)
+ChatRoomClient::ChatRoomClient(QWidget *parent) :QMainWindow(parent),ui(new Ui::ChatRoomClient)
 {
     ui->setupUi(this);
     setWindowTitle(QStringLiteral("Chat Room"));
@@ -44,11 +44,11 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui(new Ui::MainWind
     setCentralWidget(mainLayoutContainer);
 }
 
-MainWindow::~MainWindow(){
+ChatRoomClient::~ChatRoomClient(){
     delete ui;
 }
 
-void MainWindow::on_connectPushButton_clicked(){
+void ChatRoomClient::on_connectPushButton_clicked(){
     userID = ui->IDlineEdit->text();
     if(!serverAdress.isEmpty()){
         connectToServer();
@@ -59,7 +59,7 @@ void MainWindow::on_connectPushButton_clicked(){
 
 }
 
-void MainWindow::readSettings(){
+void ChatRoomClient::readSettings(){
     QFileInfo fi("UserSettings.ini");
 
     if(!fi.isFile()){
@@ -77,7 +77,7 @@ void MainWindow::readSettings(){
 
 }
 
-void MainWindow::creatActions(){
+void ChatRoomClient::creatActions(){
     settingAction = new QAction(QStringLiteral("設定"),this);
     settingAction->setStatusTip(QStringLiteral("開啟設定介面"));
     connect(settingAction,SIGNAL(triggered()),this,SLOT(set()));
@@ -96,12 +96,12 @@ void MainWindow::creatActions(){
     connect(sendAction,SIGNAL(triggered()),this,SLOT(sendMessage()));
 }
 
-void MainWindow::showAbout(){
+void ChatRoomClient::showAbout(){
     QMessageBox message(QMessageBox::NoIcon,QStringLiteral("關於"),"ChatRoom ver0.0.1",QMessageBox::Ok);
     message.exec();
 }
 
-void MainWindow::creatMenus(){
+void ChatRoomClient::creatMenus(){
     OptionMenu = ui->menuBar->addMenu(QStringLiteral("選項"));
     OptionMenu->addAction(settingAction);
 
@@ -110,7 +110,7 @@ void MainWindow::creatMenus(){
     HelpMenu->addAction(aboutQtAction);
 }
 
-void MainWindow::set(){
+void ChatRoomClient::set(){
     if(!setting){
         setting = new settingInterface(this);
         setting->getSettings(userID);
@@ -122,7 +122,7 @@ void MainWindow::set(){
     setting->activateWindow();
 }
 
-void MainWindow::connectToServer(){
+void ChatRoomClient::connectToServer(){
     qDebug() << "connectToServer()";
     userID = ui->IDlineEdit->text();
     tcpSocket.connectToHost(serverAdress,serverPort);
@@ -132,7 +132,7 @@ void MainWindow::connectToServer(){
     nextBlockSize = 0;
 }
 
-void MainWindow::connectSuccess(){
+void ChatRoomClient::connectSuccess(){
     qDebug() << "connectSuccess()";
     ui->sendButton->setEnabled(true);
     ui->logoutPushButton->setEnabled(true);
@@ -140,7 +140,7 @@ void MainWindow::connectSuccess(){
     isConnected = true;
 }
 
-void MainWindow::connectionCloseByServer(){
+void ChatRoomClient::connectionCloseByServer(){
     qDebug() << "connectionCloseByServer()";
     if(nextBlockSize!=0xFFF)
         //ui->statusLabel->setText(QStringLiteral("錯誤:伺服端切斷連線"));
@@ -148,24 +148,24 @@ void MainWindow::connectionCloseByServer(){
     isConnected = false;
 }
 
-void MainWindow::error(QAbstractSocket::SocketError){
+void ChatRoomClient::error(QAbstractSocket::SocketError){
     qDebug() << "error()";
     ui->statusLabel->setText(tcpSocket.errorString());
     qDebug() << tcpSocket.errorString();
     closeConnection();
 }
 
-void MainWindow::newState(QAbstractSocket::SocketState){
+void ChatRoomClient::newState(QAbstractSocket::SocketState){
     qDebug() << QStringLiteral("新的state狀態 : ")+QString::number(tcpSocket.state());
 }
 
-void MainWindow::on_logoutPushButton_clicked(){
+void ChatRoomClient::on_logoutPushButton_clicked(){
     closeConnection();
     ui->logoutPushButton->setEnabled(false);
 }
 
 
-void MainWindow::closeConnection(){
+void ChatRoomClient::closeConnection(){
     qDebug() << "closeConnection()";
     tcpSocket.close();
     ui->connectPushButton->setEnabled(true);
@@ -174,7 +174,7 @@ void MainWindow::closeConnection(){
     ui->sendButton->setEnabled(false);
 }
 
-void MainWindow::setServerAdress(QString newAdress = ""){
+void ChatRoomClient::setServerAdress(QString newAdress = ""){
 
     if(newAdress.isEmpty()){
         QMessageBox message(QMessageBox::Warning ,QStringLiteral("!!!"),QStringLiteral("沒有設置伺服器位址"),QMessageBox::Ok);
@@ -196,7 +196,7 @@ void MainWindow::setServerAdress(QString newAdress = ""){
 
 }
 
-void MainWindow::sendMessage(){
+void ChatRoomClient::sendMessage(){
     if(!isConnected){
         return;
     }
@@ -211,7 +211,7 @@ void MainWindow::sendMessage(){
     ui->MessageTextEdit->setText("");
 }
 
-void MainWindow::deal(){
+void ChatRoomClient::deal(){
     //qDebug() << QStringLiteral("deal()中的state ")+QString::number(tcpSocket.state());
     QDataStream in(&tcpSocket);
     in.setVersion(QDataStream::Qt_5_7);
@@ -269,7 +269,7 @@ void MainWindow::deal(){
         qDebug() << QStringLiteral("執行至deal()最底，requestType類型是 : ") << requestType;
 }
 
-void MainWindow::login(){
+void ChatRoomClient::login(){
     //qDebug() << QStringLiteral("login()中的state ")+QString::number(tcpSocket.state());
     QByteArray block;
     QDataStream out(&block,QIODevice::WriteOnly);
@@ -278,7 +278,7 @@ void MainWindow::login(){
     tcpSocket.write(block);
 }
 
-void MainWindow::receiveMessage(quint8 requestType = quint8('A'),QString sendUserID = QStringLiteral("系統"),QString message = QStringLiteral("")){
+void ChatRoomClient::receiveMessage(quint8 requestType = quint8('A'),QString sendUserID = QStringLiteral("系統"),QString message = QStringLiteral("")){
     if (requestType == quint8('A')){
         ui->textBrowser->append(QStringLiteral("伺服器公告 : ")+message);
         return;
@@ -292,7 +292,7 @@ void MainWindow::receiveMessage(quint8 requestType = quint8('A'),QString sendUse
 }
 /*
 //測試用
-int MainWindow::ReadFile(){
+int ChatRoomClient::ReadFile(){
     QString fileLocation = QFileDialog::getOpenFileName(this,QStringLiteral("Open File"),"/home", "Text files (*.txt);;Any files(*.*)");
     QFile file(fileLocation);
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)){

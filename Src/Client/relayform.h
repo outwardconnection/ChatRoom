@@ -56,7 +56,8 @@ public:
 
     //---
 
-    //---SelectAccountForm
+    //---LoginForm
+
 
     //---
 
@@ -75,10 +76,10 @@ private:
     void test(int k);
     void hideServerListForm();
     void hideEditServerForm();
-    void hideSelectAccountForm();
+    void hideLoginForm();
     void showServerListForm();
     void showEditServerForm();
-    void showSelectAccountForm();
+    void showLoginForm();
 
 private slots:
     void changeLockedItem(int newLockedItem);
@@ -89,6 +90,11 @@ private slots:
     void on_enterButton_ServerListForm_clicked();
     void editServer();
     void cancelEditServer();
+    void connected();
+
+signals:
+
+    void connectToServer(QString,quint16);
 
 };
 

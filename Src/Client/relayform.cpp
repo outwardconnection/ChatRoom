@@ -14,18 +14,21 @@ RelayForm::RelayForm(QWidget *parent) :QWidget(parent)
     maxServerAmount = 100;
     lockedItemId=-1;
     totalServerAmount=0;
+
     serverList = new ServerItemList[maxServerAmount];
     listOrderToId = new int[maxServerAmount+1];
     for(int i=0;i<30;i++)
     {
         listOrderToId[i]=0;
     }
+
     mainLayout = new QVBoxLayout;
     mainLayout->setMargin(0);
     for(unsigned int i=0;i<maxServerAmount;i++)
     {
         serverList[i].beUsing=false;
     }
+
     readServerLists();
     resize(700,430);
     setLayout(mainLayout);
@@ -43,7 +46,13 @@ RelayForm::~RelayForm()
 void RelayForm::closeEvent(QCloseEvent *event)
 {
     writeServerLists();
+    qDebug() << QStringLiteral("關閉RelayForm");
     event->accept();
+}
+
+void RelayForm::connected()
+{
+    this->close();
 }
 
 bool RelayForm::readServerLists()
@@ -171,8 +180,8 @@ bool RelayForm::writeServerLists()
        out.setVersion(QDataStream::Qt_5_7);
        for(int i=1;i<=totalServerAmount;i++)
        {
-           qDebug() << "i="+QString::number(i) << " "
-                    << "listOrderToId[i]="+QString::number(listOrderToId[i]);
+           //qDebug() << "i="+QString::number(i) << " "
+           //         << "listOrderToId[i]="+QString::number(listOrderToId[i]);
            if(serverList[listOrderToId[i]].beUsing)
            {
                out << propety_serverName << serverList[listOrderToId[i]].getServerName()
@@ -277,7 +286,7 @@ void RelayForm::on_editButton_ServerListForm_clicked()
 void RelayForm::on_deleteButton_ServerListForm_clicked()
 {
     //qDebug()<<"delete";
-    qDebug() << lockedItemId;
+    //qDebug() << lockedItemId;
     if(lockedItemId != -1)
     {
         serverList[lockedItemId].hide();
@@ -286,7 +295,7 @@ void RelayForm::on_deleteButton_ServerListForm_clicked()
         serverList[lockedItemId].beUsing=false;
         quint32 deletedListOrder=serverList[lockedItemId].order;
         serverList[lockedItemId].order=0;
-        qDebug() << "deletedListOrder " + QString::number(deletedListOrder);
+        //qDebug() << "deletedListOrder " + QString::number(deletedListOrder);
         for(int i=deletedListOrder+1;i<=totalServerAmount;i++)
         {
             if(serverList[listOrderToId[i]].beUsing)
@@ -306,7 +315,10 @@ void RelayForm::on_deleteButton_ServerListForm_clicked()
 void RelayForm::on_enterButton_ServerListForm_clicked()
 {
     //serverCapWidget_ServerListForm->setStyleSheet(QString::fromUtf8("border:1px solid blue"));
-    qDebug()<<"enter";
+    //qDebug()<<"enter";
+    emit connectToServer(serverList[lockedItemId].getServerAdress(),
+                         serverList[lockedItemId].getServerPort());
+    this->hide();
 }
 
 void RelayForm::showServerListForm()
@@ -333,7 +345,7 @@ void RelayForm::showServerListForm()
         creatButton_ServerListForm->setText(QStringLiteral("新增"));
         editButton_ServerListForm->setText(QStringLiteral("編輯"));
         deleteButton_ServerListForm->setText(QStringLiteral("刪除"));
-        enterButton_ServerListForm->setText(QStringLiteral("選擇"));
+        enterButton_ServerListForm->setText(QStringLiteral("連線"));
         serverItemAmountLabel_ServerListForm = new QLabel(QString::number(totalServerAmount)+"/"+QString::number(maxServerAmount));
 
         topLayout_ServerListForm->addWidget(creatButton_ServerListForm);
@@ -473,7 +485,7 @@ void RelayForm::changeLockedItem(int newLockedItem)
     return;
 }
 
-void RelayForm::showSelectAccountForm()
+void RelayForm::showLoginForm()
 {
 
 }
@@ -489,7 +501,7 @@ void RelayForm::hideEditServerForm()
     editServerFormWidget->hide();
 }
 
-void RelayForm::hideSelectAccountForm()
+void RelayForm::hideLoginForm()
 {
 
 }

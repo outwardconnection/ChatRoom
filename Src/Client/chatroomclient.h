@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CHATROOMCLIENT_H
+#define CHATROOMCLIENT_H
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -14,19 +14,19 @@ class QString;
 class QSettings;
 
 namespace Ui {
-class MainWindow;
+class ChatRoomClient;
 }
 
-class MainWindow : public QMainWindow
+class ChatRoomClient : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit ChatRoomClient(QWidget *parent = 0);
+    ~ChatRoomClient();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::ChatRoomClient *ui;
     void creatActions();
     void creatMenus();
     QMenu *OptionMenu;
@@ -70,4 +70,4 @@ private slots:
 };
 
 
-#endif // MAINWINDOW_H
+#endif // CHATROOMCLIENT_H
