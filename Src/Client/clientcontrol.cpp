@@ -3,18 +3,55 @@
 
 ClientControl::ClientControl(QObject *parent) : QObject(parent)
 {
-    qDebug() << "Hellow";
+    chatRoomClientBulided=false;
+    relayFormBulided=false;
+
     rf = new RelayForm;
-    //client = new ChatRoomClient;
+    relayFormBulided=true;
+    connect(rf,SIGNAL(connectToServer(QString,quint16)),this,SLOT(connectToServer(QString,quint16)));
     rf->show();
+
+    //client = new ChatRoomClient;
+    //chatRoomClientBulided=true;
+    //client->show();
 
 
 }
 
 ClientControl::~ClientControl()
 {
-    delete rf;
+    if(relayFormBulided)
+    {
+        delete rf;
+    }
+    if(chatRoomClientBulided)
+    {
+        delete client;
+    }
+
     //delete client;
 
+}
+
+void ClientControl::connectToServer(QString serverAdress,quint16 serverPort)
+{
+
+    rf->hide();
+    if(!chatRoomClientBulided)
+    {
+        client = new ChatRoomClient;
+        chatRoomClientBulided=true;
+
+    }
+    client->show();
+
+    if(client->connectToServer(serverAdress,serverPort))
+    {
+
+    }
+    else
+    {
+
+    }
 }
 

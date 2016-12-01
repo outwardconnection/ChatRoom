@@ -1,13 +1,16 @@
 #ifndef CHATROOMCLIENT_H
 #define CHATROOMCLIENT_H
 
-#include <QMainWindow>
+#include <QWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QFileDialog>
-//#include "SettingDialog/settinginterface.h"
-#include "settinginterface.h"
 #include <QTcpSocket>
 #include <QTextStream>
-#include <QAction>
+#include "ChatRoomClientForm/connectformlayout.h"
 
 class QFile;
 class QString;
@@ -17,57 +20,29 @@ namespace Ui {
 class ChatRoomClient;
 }
 
-class ChatRoomClient : public QMainWindow
+class ChatRoomClient : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit ChatRoomClient(QWidget *parent = 0);
     ~ChatRoomClient();
+    void showConnectForm(quint8 formMode=0);
+    ConnectFormLayout *connectFormLayout;
+    QString serverAdrss;
+    quint32 serverPort;
+
 
 private:
-    Ui::ChatRoomClient *ui;
-    void creatActions();
-    void creatMenus();
-    QMenu *OptionMenu;
-    QMenu *HelpMenu;
-    QAction *settingAction;
-    QAction *aboutAction;
-    QAction *aboutQtAction;
-    quint16 nextBlockSize;
-    QAction *sendAction;
-    QTcpSocket tcpSocket;
-    void closeConnection();
-    QString serverAdress;
-    settingInterface *setting;
-    void readSettings();
-    QTextStream settings;
-    int serverPort = 54321 ;
-    QString userID;
-    //QSettings *userSettingsRead;
-    bool isConnected = false;
 
 signals:
-    void transDeal(quint8,QString,QString);
+
+public slots:
+    bool connectToServer(QString,quint16);
 
 private slots:
-    //int ReadFile();
-    void showAbout();
-    void newState(QAbstractSocket::SocketState);
-    void set();
-    void connectToServer();
-    void login();
-    void connectionCloseByServer();
-    void error(QAbstractSocket::SocketError);
-    void setServerAdress(QString);
-    void sendMessage();
-    void connectSuccess();
-    void deal();
-    void receiveMessage(quint8 requestType,QString userID,QString Message);
-    //void test();
-    void on_connectPushButton_clicked();
-    void on_logoutPushButton_clicked();
-};
 
+
+};
 
 #endif // CHATROOMCLIENT_H

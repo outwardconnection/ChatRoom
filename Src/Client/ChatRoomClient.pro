@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     serverlistitem.cpp \
     scrollareamodify.cpp \
     clientcontrol.cpp \
-    chatroomclient.cpp
+    chatroomclient.cpp \
+    ChatRoomClientForm/connectformlayout.cpp
 
 HEADERS  += \
     settinginterface.h \
@@ -28,7 +29,8 @@ HEADERS  += \
     ServerListItem.h \
     scrollareamodify.h \
     clientcontrol.h \
-    chatroomclient.h
+    chatroomclient.h \
+    ChatRoomClientForm/connectformlayout.h
 
 FORMS    += \
     chatroomclient.ui

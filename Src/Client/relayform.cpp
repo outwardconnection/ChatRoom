@@ -316,9 +316,17 @@ void RelayForm::on_enterButton_ServerListForm_clicked()
 {
     //serverCapWidget_ServerListForm->setStyleSheet(QString::fromUtf8("border:1px solid blue"));
     //qDebug()<<"enter";
-    emit connectToServer(serverList[lockedItemId].getServerAdress(),
-                         serverList[lockedItemId].getServerPort());
-    this->hide();
+    if(lockedItemId!=-1)
+    {
+        emit connectToServer(serverList[lockedItemId].getServerAdress(),
+                             serverList[lockedItemId].getServerPort());
+    }
+    else
+    {
+        qDebug() << QStringLiteral("請先選擇伺服器");
+    }
+
+    //this->hide();
 }
 
 void RelayForm::showServerListForm()

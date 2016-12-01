@@ -14,11 +14,14 @@ public:
     RelayForm *rf;
     ChatRoomClient *client;
 
-
-
 signals:
 
-public slots:
+private slots:
+    void connectToServer(QString,quint16);
+
+private:
+    bool relayFormBulided;
+    bool chatRoomClientBulided;
 };
 
 #endif // CLIENTCONTROL_H
