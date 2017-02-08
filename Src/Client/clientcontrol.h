@@ -11,8 +11,8 @@ class ClientControl : public QObject
 public:
     explicit ClientControl(QObject *parent = 0);
     ~ClientControl();
-    RelayForm *rf;
-    ChatRoomClient *client;
+    RelayForm *rf = NULL;
+    ChatRoomClient *client = NULL;
 
 signals:
 

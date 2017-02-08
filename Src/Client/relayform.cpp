@@ -40,7 +40,9 @@ RelayForm::RelayForm(QWidget *parent) :QWidget(parent)
 RelayForm::~RelayForm()
 {
     delete[] serverList;
+    serverList = NULL;
     delete[] listOrderToId;
+    listOrderToId = NULL;
 }
 
 void RelayForm::closeEvent(QCloseEvent *event)
@@ -68,6 +70,7 @@ bool RelayForm::readServerLists()
     {
         fLists = new QFile("Records/serverlists.lst");
         delete fInfo;
+        fInfo == NULL;
     }
     else
     {
@@ -79,6 +82,7 @@ bool RelayForm::readServerLists()
                 //qDebug() << recordDir.currentPath();
                 qDebug() << QStringLiteral("創建文件夾 :/Records 失敗");
                 delete fInfo;
+                fInfo = NULL;
                 return false;
             }
         }
@@ -86,7 +90,9 @@ bool RelayForm::readServerLists()
         fLists->open(QIODevice::WriteOnly);
         fLists->close();
         delete fInfo;
+        fInfo = NULL;
         delete fLists;
+        fLists = NULL;
         return true;
     }
     if(fLists->open(QIODevice::ReadOnly))
@@ -137,11 +143,13 @@ bool RelayForm::readServerLists()
     else
     {
         delete fLists;
+        fLists = NULL;
         return false; //有檔案但讀取失敗時 才傳回false ★ω★
     }
     //qDebug() << totalServerAmount;
     fLists->close();
     delete fLists;
+    fLists = NULL;
 
     return true;
 }
@@ -195,6 +203,7 @@ bool RelayForm::writeServerLists()
     else
     {
         delete fLists;
+        fLists = NULL;
         qDebug() << QStringLiteral("開啟 Records/serverlists.lst 失敗");
         return false;
     }

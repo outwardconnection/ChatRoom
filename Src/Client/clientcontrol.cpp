@@ -20,16 +20,16 @@ ClientControl::ClientControl(QObject *parent) : QObject(parent)
 
 ClientControl::~ClientControl()
 {
-    if(relayFormBulided)
+    if(rf != NULL)
     {
         delete rf;
+        rf = NULL;
     }
-    if(chatRoomClientBulided)
+    if(client != NULL)
     {
         delete client;
+        client = NULL;
     }
-
-    //delete client;
 
 }
 
@@ -37,7 +37,7 @@ void ClientControl::connectToServer(QString serverAdress,quint16 serverPort)
 {
 
     rf->hide();
-    if(!chatRoomClientBulided)
+    if(client == NULL)
     {
         client = new ChatRoomClient;
         chatRoomClientBulided=true;

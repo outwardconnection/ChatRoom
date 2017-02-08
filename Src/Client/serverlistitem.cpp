@@ -104,9 +104,11 @@ bool ServerItemList::setServerIcon(QString adress)
         serverIcon = adress;
         serverIconLabel->setPixmap(QPixmap(serverIcon).scaled(100,100,Qt::KeepAspectRatio));
         delete iconInfo;
+        iconInfo = NULL;
         return true;
     }
     delete iconInfo;
+    iconInfo = NULL;
     QDir *iconDir = new QDir("Resources/Icons");
     if(!iconDir->exists())
     {
@@ -121,6 +123,7 @@ bool ServerItemList::setServerIcon(QString adress)
     }
 
     delete iconDir;
+    iconDir = NULL;
     return false;
 }
 
